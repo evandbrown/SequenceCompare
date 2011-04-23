@@ -1,4 +1,4 @@
-package com.evandbrown.sequence.service;
+package com.evandbrown.sequence.util;
 
 import java.net.URL;
 
@@ -12,15 +12,15 @@ import org.biojava3.core.sequence.ProteinSequence;
 import org.biojava3.core.sequence.compound.AminoAcidCompound;
 import org.biojava3.core.sequence.io.FastaReaderHelper;
 
-import com.evandbrown.sequence.model.ProteinSequenceComparison;
+import com.evandbrown.sequence.model.ProteinSeqComparison;
 import com.evandbrown.sequence.web.UniProtRequest;
 
 /**
- * Service used to compare the protein sequences of various organisms. 
+ * Tools used to compare the protein sequences of various organisms. 
  * Organisms are identified by their UniProt ID, which is used to retrieve
  * protein sequences from the UniProt.org web service.
  */
-public class ProteinSequenceService {
+public class ProteinSeqTools {
 	
 	/**
 	 * Create a comparison of two protein sequences given a UniProtRequest
@@ -28,42 +28,42 @@ public class ProteinSequenceService {
 	 * @param uniProtRequest
 	 * @return The result of the comparison.
 	 */
-	public ProteinSequenceComparison calculate(UniProtRequest uniProtRequest) {
+	public ProteinSeqComparison calculate(UniProtRequest uniProtRequest) {
 		try {
 		// Extract the sequences
-		ProteinSequence s1 = getProteinSequenceForId(uniProtRequest.id1);
-		ProteinSequence s2 = getProteinSequenceForId(uniProtRequest.id2);
+		ProteinSequence bioJavaSeq1 = getProteinSequenceForId(uniProtRequest.id1);
+		ProteinSequence bioJavaSeq2 = getProteinSequenceForId(uniProtRequest.id2);
 		
 		// Do the alignment
 		SubstitutionMatrix<AminoAcidCompound> matrix = new SimpleSubstitutionMatrix<AminoAcidCompound>();
 		SequencePair<ProteinSequence, AminoAcidCompound> pair = Alignments
-				.getPairwiseAlignment(s1, s2,
+				.getPairwiseAlignment(bioJavaSeq1, bioJavaSeq2,
 						PairwiseSequenceAlignerType.GLOBAL,
 						new SimpleGapPenalty(), matrix);
 		
-		// Create and return a new ProteinSequenceComparison
-		ProteinSequenceComparison pc = new ProteinSequenceComparison(uniProtRequest);
-		pc.setAlignment(pair.toString());
-		pc.setLevenshteinDistanceInt(getLevenshteinDistance(s1.getSequenceAsString(), s2.getSequenceAsString()));
+		// Create ProteinSequence wrappers
+		com.evandbrown.sequence.model.ProteinSeq proteinSeq1 = new com.evandbrown.sequence.model.ProteinSeq();
+		proteinSeq1.setId(uniProtRequest.id1);
+		proteinSeq1.setSequence(bioJavaSeq1.getSequenceAsString());
 		
-		return pc;
+		com.evandbrown.sequence.model.ProteinSeq proteinSeq2 = new com.evandbrown.sequence.model.ProteinSeq();
+		proteinSeq2.setId(uniProtRequest.id2);
+		proteinSeq2.setSequence(bioJavaSeq2.getSequenceAsString());
+		
+		// Create and return a new ProteinSequenceComparison
+		ProteinSeqComparison comparison = new ProteinSeqComparison();
+		comparison.setId(proteinSeq1.getId() + "-" + proteinSeq2.getId());
+		comparison.setSequenceOne(proteinSeq1);
+		comparison.setSequenceTwo(proteinSeq2);
+		comparison.setAlignment(pair.toString());
+		comparison.setLevenshteinDistance(getLevenshteinDistance(bioJavaSeq1.getSequenceAsString(), bioJavaSeq2.getSequenceAsString()));
+		
+		return comparison;
 		} catch (Exception ex) {
 			return null;
 		}
 	}
 	
-	public void alignProteinPairGlobal(String id1, String id2)
-			throws Exception {
-		ProteinSequence s1 = getProteinSequenceForId(id1), s2 = getProteinSequenceForId(id2);
-		SubstitutionMatrix<AminoAcidCompound> matrix = new SimpleSubstitutionMatrix<AminoAcidCompound>();
-		SequencePair<ProteinSequence, AminoAcidCompound> pair = Alignments
-				.getPairwiseAlignment(s1, s2,
-						PairwiseSequenceAlignerType.GLOBAL,
-						new SimpleGapPenalty(), matrix);
-		System.out.printf("%n%s vs %s%n%s", pair.getQuery().getAccession(),
-				pair.getTarget().getAccession(), pair);
-	}
-
 	/**
 	 * Return a ProteinSequence object for a given UniProt ID
 	 * @param uniProtId

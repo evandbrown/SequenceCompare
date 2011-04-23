@@ -9,35 +9,44 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.PathParam;
 import javax.persistence.EntityManager;
 import java.net.URI;
+import java.util.List;
 
 import com.spaceprogram.simplejpa.EntityManagerFactoryImpl;
-import com.evandbrown.sequence.model.ProteinSequenceComparison;
-import com.evandbrown.sequence.service.ProteinSequenceService;
+import com.evandbrown.sequence.model.ProteinSeqComparison;
+import com.evandbrown.sequence.service.ProteinSeqService;
+import com.evandbrown.sequence.util.ProteinSeqTools;
 
 @Path("protein")
 public class ProteinResource {
-	// Protein sequence services
-	ProteinSequenceService proteinService = new ProteinSequenceService();
+	// Protein sequence service for retrieving and persisting ProteinSequenceComparisons
+	ProteinSeqService proteinService = new ProteinSeqService();
+	
+	// Toolkit for doing protein sequence comparisons
+	ProteinSeqTools proteinTools = new ProteinSeqTools();
 	
 	@GET
-	@Path("/{organism1}/{organism2}")
+	@Path("{organism1}/{organism2}")
 	@Produces("application/json")
-	public ProteinSequenceComparison get(@PathParam("organism1") String organism1, 
+	public ProteinSeqComparison getComparison(@PathParam("organism1") String organism1, 
 			@PathParam("organism2") String organism2) {
-		return proteinService.calculate(new UniProtRequest(organism1, organism2));
+		return proteinTools.calculate(new UniProtRequest(organism1, organism2));
 	}
 
+	@GET
+	@Path("list")
+	@Produces("application/json")
+	public List<ProteinSeqComparison> getList() {
+		return proteinService.getProteinSeqComparisons();
+	}
+	
 	@PUT
 	@Consumes("application/json")
 	public Response create(UniProtRequest uniProtRequest) {
 		try {
-			EntityManagerFactoryImpl factory = new EntityManagerFactoryImpl("sequenceComparison", null);
-			EntityManager em = factory.createEntityManager();
+
+			ProteinSeqComparison comparison = proteinTools.calculate(uniProtRequest);
+			proteinService.saveProteinSeqComparison(comparison);
 			
-			ProteinSequenceComparison comparison = proteinService.calculate(uniProtRequest);
-			
-			em.persist(comparison);
-			em.close();
 			URI location = new URI(comparison.getId());
 			return Response.created(location).build();
 			
