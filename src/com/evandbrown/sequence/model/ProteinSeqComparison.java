@@ -4,10 +4,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
 import javax.persistence.Lob;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import com.evandbrown.sequence.web.UniProtRequest;
 
@@ -16,7 +14,7 @@ import com.evandbrown.sequence.web.UniProtRequest;
  * of two protein sequences, where a sequence is identified by its
  * UniProt ID.
  */
-@XmlRootElement(name = "protein-comparison")
+@XmlRootElement(name = "proteinComparisons")
 @Entity
 public class ProteinSeqComparison {
 	

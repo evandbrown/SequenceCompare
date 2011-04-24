@@ -16,6 +16,6 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>Jersey</servlet-name>
-    <url-pattern>/*</url-pattern>
+    <url-pattern>/comparisons/*</url-pattern>
   </servlet-mapping>
 </web-app>

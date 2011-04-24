@@ -31,24 +31,28 @@ public class ProteinSeqTools {
 	public ProteinSeqComparison calculate(UniProtRequest uniProtRequest) {
 		try {
 		// Extract the sequences
-		ProteinSequence bioJavaSeq1 = getProteinSequenceForId(uniProtRequest.id1);
-		ProteinSequence bioJavaSeq2 = getProteinSequenceForId(uniProtRequest.id2);
-		
+		UniProtProteinSequence bioJavaSeq1 = new UniProtProteinSequence(getProteinSequenceForId(uniProtRequest.id1));
+		UniProtProteinSequence bioJavaSeq2 = new UniProtProteinSequence(getProteinSequenceForId(uniProtRequest.id2));
+
 		// Do the alignment
 		SubstitutionMatrix<AminoAcidCompound> matrix = new SimpleSubstitutionMatrix<AminoAcidCompound>();
 		SequencePair<ProteinSequence, AminoAcidCompound> pair = Alignments
-				.getPairwiseAlignment(bioJavaSeq1, bioJavaSeq2,
+				.getPairwiseAlignment(bioJavaSeq1.getProteinSequence(), bioJavaSeq2.getProteinSequence(),
 						PairwiseSequenceAlignerType.GLOBAL,
 						new SimpleGapPenalty(), matrix);
 		
 		// Create ProteinSequence wrappers
 		com.evandbrown.sequence.model.ProteinSeq proteinSeq1 = new com.evandbrown.sequence.model.ProteinSeq();
 		proteinSeq1.setId(uniProtRequest.id1);
-		proteinSeq1.setSequence(bioJavaSeq1.getSequenceAsString());
+		proteinSeq1.setSequence(bioJavaSeq1.getProteinSequence().getSequenceAsString());
+		proteinSeq1.setName(bioJavaSeq1.getName());
+		proteinSeq1.setOrganism(bioJavaSeq1.getOrganism());
 		
 		com.evandbrown.sequence.model.ProteinSeq proteinSeq2 = new com.evandbrown.sequence.model.ProteinSeq();
 		proteinSeq2.setId(uniProtRequest.id2);
-		proteinSeq2.setSequence(bioJavaSeq2.getSequenceAsString());
+		proteinSeq2.setSequence(bioJavaSeq2.getProteinSequence().getSequenceAsString());
+		proteinSeq2.setName(bioJavaSeq2.getName());
+		proteinSeq2.setOrganism(bioJavaSeq2.getOrganism());
 		
 		// Create and return a new ProteinSequenceComparison
 		ProteinSeqComparison comparison = new ProteinSeqComparison();
@@ -56,7 +60,7 @@ public class ProteinSeqTools {
 		comparison.setSequenceOne(proteinSeq1);
 		comparison.setSequenceTwo(proteinSeq2);
 		comparison.setAlignment(pair.toString());
-		comparison.setLevenshteinDistance(getLevenshteinDistance(bioJavaSeq1.getSequenceAsString(), bioJavaSeq2.getSequenceAsString()));
+		comparison.setLevenshteinDistance(getLevenshteinDistance(bioJavaSeq1.getProteinSequence().getSequenceAsString(), bioJavaSeq2.getProteinSequence().getSequenceAsString()));
 		
 		return comparison;
 		} catch (Exception ex) {
