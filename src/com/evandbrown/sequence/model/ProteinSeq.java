@@ -4,6 +4,14 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 
+/**
+ * A ProteinSeq object represents a specific protein sequence in the 
+ * UniProt database. ProteinSeq entities are persisted to SimpleDB while
+ * their sequences are stored in S3 via the Lob attribute.
+ * 
+ * @author Evan D. Brown
+ *
+ */
 @Entity
 public class ProteinSeq {
 	@Id

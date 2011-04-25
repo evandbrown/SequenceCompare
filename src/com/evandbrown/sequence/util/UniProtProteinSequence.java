@@ -5,6 +5,13 @@ import java.util.regex.Matcher;
 
 import org.biojava3.core.sequence.ProteinSequence;
 
+/**
+ * A facade that wraps an org.biojava3.core.sequence.ProteinSequence and
+ * provides additional parsing of UniProt response data
+ * 
+ * @author Evan D. Brown
+ *
+ */
 public class UniProtProteinSequence {
 	private ProteinSequence proteinSequence;
 	private String name;

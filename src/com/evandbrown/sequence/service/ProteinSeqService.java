@@ -14,10 +14,16 @@ import com.evandbrown.sequence.web.UniProtRequest;
 /**
  * Service used to do CRUD operations on ProteinSequence and
  * ProteinSequenceComparison objects
+ * 
+ * @author Evan D. Brown
+ * 
  */
 public class ProteinSeqService {
 	EntityManagerFactoryImpl factory;
 
+	/**
+	 * Create a JPA factory with a new instance.
+	 */
 	public ProteinSeqService() {
 		factory = new EntityManagerFactoryImpl("sequenceComparison", null);
 	}

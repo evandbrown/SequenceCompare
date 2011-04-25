@@ -19,6 +19,9 @@ import com.evandbrown.sequence.web.UniProtRequest;
  * Tools used to compare the protein sequences of various organisms. 
  * Organisms are identified by their UniProt ID, which is used to retrieve
  * protein sequences from the UniProt.org web service.
+ * 
+ * @author Evan D. Brown
+ * 
  */
 public class ProteinSeqTools {
 	
@@ -87,6 +90,9 @@ public class ProteinSeqTools {
 
 	/**
 	 * Calculate the Levenshtein Distance between two strings.
+	 * 
+	 * Courtesy of http://www.merriampark.com/ldjava.htm
+	 * 
 	 * @param s
 	 * @param t
 	 * @return

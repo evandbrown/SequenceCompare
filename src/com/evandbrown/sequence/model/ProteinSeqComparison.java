@@ -10,9 +10,18 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.evandbrown.sequence.web.UniProtRequest;
 
 /**
- * A ProteinSequenceComparison object contains data about the comparison
- * of two protein sequences, where a sequence is identified by its
- * UniProt ID.
+ * A comparison of two protein sequences. The comparison contains the sequence
+ * calculated when ProteinSeq 1 is aligned to ProteinSeq 2. Additionally, the
+ * Levenshtein Distance of the two sequences is calculated.
+ * 
+ * Data is persisted to SimpleDB. The alignment contains a pointer to the actual
+ * sequence which is persisted to S3 via the @Lob attribute.
+ * 
+ * The object is also eligible for JAXB serialization (XML or JSON) as indicated
+ * by the @XmlRootElement attribute.
+ * 
+ * @author Evan D. Brown
+ * 
  */
 @XmlRootElement(name = "proteinComparisons")
 @Entity
@@ -25,10 +34,6 @@ public class ProteinSeqComparison {
 	private String alignment;
 	private Integer levenshteinDistance;
 	
-	/**
-	 * A comparison of two protein sequences
-	 * @param uniProtRequest
-	 */
 	public ProteinSeqComparison() { }
 	
 	public String getId() {
