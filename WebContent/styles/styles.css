@@ -25,6 +25,7 @@
 
 #comparisons {
 	margin-left: 10px;
+	float: left;
 }
 
 .comparison {
@@ -73,3 +74,7 @@ label {
 	margin-bottom: 1em;
 	border: 2px solid #DDD;
 }
+
+#add-new img {
+	width: 20px;
+	height: 20px;
